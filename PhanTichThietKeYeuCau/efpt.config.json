@@ -1,0 +1,182 @@
+﻿{
+   "CodeGenerationMode": 6,
+   "ContextClassName": "QuanLyTieuHaoVatTuContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1706",
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PluralRules": null,
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "PhanTichThietKeYeuCau",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "SingularRules": null,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[BO_PHAN]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CHI_TIET_CAP_PHAT]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CHI_TIET_DDH]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CHI_TIET_KHM]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CHI_TIET_NHAP_KHO]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DON_DAT_HANG]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[KE_HOACH_MUA]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[KHO]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[LENH_SAN_XUAT]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[NHA_CUNG_CAP]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[NHAN_VIEN]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PHIEU_CAP_PHAT]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PHIEU_KIEM_TRA_CL]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PHIEU_NHAP_KHO]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TON_KHO]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[VAT_TU]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[vw_ChiTietDonDatHang]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[vw_QuyTrinhMuaHang]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[vw_TieuHaoVatTu]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[vw_TongNhapKho]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[vw_TonKhoCanhBao]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[vw_VatTuSapHet]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[sp_BaoCaoTieuHao]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[sp_CapNhatDanhGiaNCC]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[sp_DuyetDonDatHang]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[sp_DuyetKeHoachMua]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[fn_DinhMucLyThuyet]",
+         "ObjectType": 2
+      },
+      {
+         "Name": "[dbo].[fn_TieuHaoTheoLSX]",
+         "ObjectType": 2
+      },
+      {
+         "Name": "[dbo].[fn_TieuHaoThucTe]",
+         "ObjectType": 2
+      },
+      {
+         "Name": "[dbo].[fn_TinhTrangTon]",
+         "ObjectType": 2
+      },
+      {
+         "Name": "[dbo].[fn_TongGiaTriDDH]",
+         "ObjectType": 2
+      },
+      {
+         "Name": "[dbo].[fn_TonKho]",
+         "ObjectType": 2
+      },
+      {
+         "Name": "[dbo].[fn_TyLeLoiTrungBinhNCC]",
+         "ObjectType": 2
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false,
+   "UseTypedTvpParameters": true
+}
