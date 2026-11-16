@@ -33,7 +33,8 @@ public partial class frmMain : Form
         var mHeThong = new ToolStripMenuItem("Hệ thống");
         mHeThong.DropDownItems.Add("Thoát", null, (_, _) => Close());
 
-        var mDanhMuc = new ToolStripMenuItem("Danh mục");
+        /*
+         * var mDanhMuc = new ToolStripMenuItem("Danh mục");
         mDanhMuc.DropDownItems.Add("Vật tư", null, (_, _) => Mo(new frmVatTu()));
         mDanhMuc.DropDownItems.Add("Nhà cung cấp", null, (_, _) => ChuaCo());
         mDanhMuc.DropDownItems.Add("Bộ phận / Nhân viên / Kho", null, (_, _) => ChuaCo());
@@ -52,6 +53,28 @@ public partial class frmMain : Form
 
         var mBC = new ToolStripMenuItem("Báo cáo");
         mBC.DropDownItems.Add("Thống kê – báo cáo", null, (_, _) => ChuaCo());
+        */
+
+        var mDanhMuc = new ToolStripMenuItem("Danh mục");
+        mDanhMuc.DropDownItems.Add("Vật tư", null, (_, _) => Mo(new frmVatTu()));
+        mDanhMuc.DropDownItems.Add("Nhà cung cấp", null, (_, _) => Mo(DanhMucForms.NhaCungCap()));
+        mDanhMuc.DropDownItems.Add("Bộ phận / Nhân viên / Kho", null, (_, _) => Mo(new frmDanhMuc()));
+
+        var mMua = new ToolStripMenuItem("Mua hàng");
+        mMua.DropDownItems.Add("Kế hoạch mua", null, (_, _) => Mo(new frmKeHoachMua()));
+        mMua.DropDownItems.Add("Đơn đặt hàng", null, (_, _) => Mo(new frmDonDatHang()));
+        mMua.DropDownItems.Add("Kiểm tra chất lượng", null, (_, _) => Mo(DanhMucForms.KiemTraCL()));
+
+        var mKho = new ToolStripMenuItem("Kho");
+        mKho.DropDownItems.Add("Nhập kho", null, (_, _) => Mo(new frmNhapKho()));
+        mKho.DropDownItems.Add("Tồn kho", null, (_, _) => Mo(new frmTonKho()));
+
+        var mCap = new ToolStripMenuItem("Cấp phát & Tiêu hao");
+        mCap.DropDownItems.Add("Lệnh sản xuất", null, (_, _) => Mo(DanhMucForms.LenhSanXuat()));
+        mCap.DropDownItems.Add("Cấp phát và theo dõi tiêu hao", null, (_, _) => Mo(new frmCapPhat()));
+
+        var mBC = new ToolStripMenuItem("Báo cáo");
+        mBC.DropDownItems.Add("Thống kê – báo cáo", null, (_, _) => Mo(new frmBaoCao()));
 
         menu.Items.AddRange(new ToolStripItem[] { mHeThong, mDanhMuc, mMua, mKho, mCap, mBC });
         MainMenuStrip = menu;
