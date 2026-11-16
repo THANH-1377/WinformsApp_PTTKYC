@@ -264,6 +264,7 @@ public partial class frmNhapKho : Form
         txtGhiChu.Clear();
         lblDon.Text = "(chưa chọn đơn)";
         lblKetQuaKT.Text = "";
+        if (Session.MaNhanVien != null) cboNhanVienNK.SelectedValue = Session.MaNhanVien;    // frmNhapKho
         CapNhatTong();
     }
 

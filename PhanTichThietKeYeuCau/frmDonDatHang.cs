@@ -125,8 +125,8 @@ public class frmDonDatHang : Form
         cboKHM.Enabled = cboNCC.Enabled = cboNhanVienLap.Enabled = dtpNgayDat.Enabled =
             dtpNgayGiao.Enabled = txtGhiChu.Enabled = _choSua;
         btnLuu.Enabled = _choSua;
-        btnDuyet.Enabled = _ma != null && lblTrangThai.Text == "Chờ duyệt";
-        btnHuy.Enabled = _ma != null && lblTrangThai.Text is "Chờ duyệt" or "Đã duyệt";
+        btnDuyet.Enabled = _ma != null && lblTrangThai.Text == "Chờ duyệt" && Session.Co(Chuc.DuyetChungTu);
+        btnHuy.Enabled = _ma != null && lblTrangThai.Text is "Chờ duyệt" or "Đã duyệt" && Session.Co(Chuc.DuyetChungTu);
     }
 
     private static string NextMa(QuanLyTieuHaoVatTuContext db)
@@ -146,6 +146,7 @@ public class frmDonDatHang : Form
         dtpNgayDat.Value = DateTime.Today; dtpNgayGiao.Value = DateTime.Today.AddDays(7); dtpNgayGiao.Checked = true;
         cboKHM.SelectedIndex = -1; cboNCC.SelectedIndex = -1;
         lblTrangThai.Text = "Chờ duyệt (mới)";
+        if (Session.MaNhanVien != null) cboNhanVienLap.SelectedValue = Session.MaNhanVien;   // frmKeHoachMua, frmDonDatHang
         SetEditable(); CapNhatTong();
     }
 
@@ -322,6 +323,7 @@ public class frmDonDatHang : Form
 
     private void Duyet()
     {
+        if (!Session.Co(Chuc.DuyetChungTu)) { UI.Error("Chỉ Quản lý vật tư mới được duyệt đơn đặt hàng."); return; }
         if (_ma == null || lblTrangThai.Text != "Chờ duyệt") { UI.Error("Hãy chọn một đơn đang Chờ duyệt để duyệt."); return; }
         if (!UI.Confirm($"Duyệt đơn {_ma} và gửi cho nhà cung cấp?")) return;
         var ma = _ma;
@@ -336,6 +338,7 @@ public class frmDonDatHang : Form
 
     private void HuyDon()
     {
+        if (!Session.Co(Chuc.DuyetChungTu)) { UI.Error("Chỉ Quản lý vật tư mới được hủy đơn đặt hàng."); return; }
         if (_ma == null) { UI.Error("Hãy chọn một đơn trong danh sách."); return; }
         var ma = _ma;
         try

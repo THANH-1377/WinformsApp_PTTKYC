@@ -45,6 +45,8 @@ public partial class QuanLyTieuHaoVatTuContext : DbContext
 
     public virtual DbSet<PHIEU_NHAP_KHO> PHIEU_NHAP_KHO { get; set; }
 
+    public virtual DbSet<TAI_KHOAN> TAI_KHOAN { get; set; }
+
     public virtual DbSet<TON_KHO> TON_KHO { get; set; }
 
     public virtual DbSet<VAT_TU> VAT_TU { get; set; }
@@ -505,6 +507,39 @@ public partial class QuanLyTieuHaoVatTuContext : DbContext
             entity.HasOne(d => d.MaNhanVienNKNavigation).WithMany(p => p.PHIEU_NHAP_KHO)
                 .HasForeignKey(d => d.MaNhanVienNK)
                 .HasConstraintName("FK__PHIEU_NHA__MaNha__75A278F5");
+        });
+
+        modelBuilder.Entity<TAI_KHOAN>(entity =>
+        {
+            entity.HasKey(e => e.TenDangNhap).HasName("PK__TAI_KHOA__55F68FC1C01B2C56");
+
+            entity.HasIndex(e => e.MaNhanVien, "UX_TaiKhoan_MaNhanVien")
+                .IsUnique()
+                .HasFilter("([MaNhanVien] IS NOT NULL)");
+
+            entity.Property(e => e.TenDangNhap).HasMaxLength(50);
+            entity.Property(e => e.HoTen)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.KhoaDen).HasColumnType("datetime");
+            entity.Property(e => e.LanDangNhapCuoi).HasColumnType("datetime");
+            entity.Property(e => e.MaNhanVien)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.MatKhauHash)
+                .IsRequired()
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.NgayTao).HasColumnType("datetime");
+            entity.Property(e => e.VaiTro)
+                .IsRequired()
+                .HasMaxLength(10)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.MaNhanVienNavigation).WithOne(p => p.TAI_KHOAN)
+                .HasForeignKey<TAI_KHOAN>(d => d.MaNhanVien)
+                .HasConstraintName("FK__TAI_KHOAN__MaNha__3C34F16F");
         });
 
         modelBuilder.Entity<TON_KHO>(entity =>

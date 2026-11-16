@@ -30,4 +30,6 @@ public partial class NHAN_VIEN
     public virtual ICollection<PHIEU_KIEM_TRA_CL> PHIEU_KIEM_TRA_CL { get; set; } = new List<PHIEU_KIEM_TRA_CL>();
 
     public virtual ICollection<PHIEU_NHAP_KHO> PHIEU_NHAP_KHO { get; set; } = new List<PHIEU_NHAP_KHO>();
+
+    public virtual TAI_KHOAN TAI_KHOAN { get; set; }
 }

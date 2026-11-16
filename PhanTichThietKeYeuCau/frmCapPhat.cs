@@ -296,6 +296,7 @@ public partial class frmCapPhat : Form
 
     private void LuuPhieu()
     {
+        if (!Session.Co(Chuc.LapPhieuCapPhat)) { UI.Error("Chỉ Thủ kho hoặc Quản lý vật tư mới được lập phiếu cấp phát."); return; }
         if (_maPhieuDangXem != null) { UI.Error("Phiếu này đã được lưu. Bấm 'Lập phiếu mới' để tạo phiếu khác."); return; }
         if (_dong.Count == 0) { UI.Error("Phiếu chưa có vật tư nào."); return; }
         if (cboLenhSanXuat.SelectedItem is not ComboItem ls ||
@@ -435,6 +436,7 @@ public partial class frmCapPhat : Form
 
     private void XacNhanThucNhan()
     {
+        if (!Session.Co(Chuc.XacNhanThucNhan)) { UI.Error("Bạn không có quyền xác nhận số lượng thực nhận."); return; }
         if (_maPhieuDangXem == null)
         { UI.Error("Chọn một phiếu trong danh sách bên dưới để xác nhận thực nhận."); return; }
         if (dgvChiTietCapPhat.CurrentRow?.DataBoundItem is not DongCapPhat d)

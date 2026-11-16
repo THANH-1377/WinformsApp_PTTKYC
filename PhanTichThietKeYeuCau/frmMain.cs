@@ -1,19 +1,18 @@
 using PhanTichThietKeYeuCau;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using PhanTichThietKeYeuCau.Models;
 
 namespace PhanTichThietKeYeuCau;
 
 public partial class frmMain : Form
 {
+    private record MucMenu(string Text, string Quyen, Func<Form> Tao);
+
     private readonly Label lblVatTuThieu = new(), lblDDHChoDuyet = new(),
                            lblLSXDangSX = new(), lblTongGiaTriTon = new();
-    private DataGridView dgvCanhBaoTon = null!, dgvVuotDinhMuc = null!;
+    private DataGridView? dgvCanhBaoTon, dgvVuotDinhMuc;
+    private readonly bool _xemSoLieu = Session.Co(Chuc.TonKho) || Session.Co(Chuc.BaoCao);
+
+    public bool DangXuat { get; private set; }
 
     public frmMain()
     {
@@ -22,68 +21,60 @@ public partial class frmMain : Form
         Load += (_, _) => LoadDashboard();
     }
 
+    // Tạo một nhóm menu, chỉ thêm các mục mà người dùng có quyền
+    private ToolStripMenuItem Nhom(string ten, params MucMenu[] muc)
+    {
+        var m = new ToolStripMenuItem(ten);
+        foreach (var x in muc)
+            if (Session.Co(x.Quyen))
+            {
+                var tao = x.Tao;
+                m.DropDownItems.Add(x.Text, null, (_, _) => Mo(tao()));
+            }
+        m.Visible = m.DropDownItems.Count > 0;
+        return m;
+    }
+
     private void BuildUi()
     {
-        Text = "HỆ THỐNG QUẢN LÝ TIÊU HAO VẬT TƯ SẢN XUẤT";
-        ClientSize = new Size(1100, 620);
+        Text = "QUẢN LÝ TIÊU HAO VẬT TƯ SẢN XUẤT";
+        ClientSize = new Size(1100, 660);
         StartPosition = FormStartPosition.CenterScreen;
 
-        // ----- MenuStrip -----
+        // ----- Menu -----
         var menu = new MenuStrip();
         var mHeThong = new ToolStripMenuItem("Hệ thống");
+        mHeThong.DropDownItems.Add("Đổi mật khẩu", null, (_, _) => { using var f = new frmDoiMatKhau(); f.ShowDialog(this); });
+        if (Session.Co(Chuc.TaiKhoan))
+            mHeThong.DropDownItems.Add("Quản lý tài khoản", null, (_, _) => Mo(new frmTaiKhoan()));
+        mHeThong.DropDownItems.Add(new ToolStripSeparator());
+        mHeThong.DropDownItems.Add("Đăng xuất", null, (_, _) => DangXuatNgay());
         mHeThong.DropDownItems.Add("Thoát", null, (_, _) => Close());
 
-        /*
-         * var mDanhMuc = new ToolStripMenuItem("Danh mục");
-        mDanhMuc.DropDownItems.Add("Vật tư", null, (_, _) => Mo(new frmVatTu()));
-        mDanhMuc.DropDownItems.Add("Nhà cung cấp", null, (_, _) => ChuaCo());
-        mDanhMuc.DropDownItems.Add("Bộ phận / Nhân viên / Kho", null, (_, _) => ChuaCo());
-
-        var mMua = new ToolStripMenuItem("Mua hàng");
-        mMua.DropDownItems.Add("Kế hoạch mua", null, (_, _) => ChuaCo());
-        mMua.DropDownItems.Add("Đơn đặt hàng", null, (_, _) => ChuaCo());
-        mMua.DropDownItems.Add("Kiểm tra chất lượng", null, (_, _) => ChuaCo());
-
-        var mKho = new ToolStripMenuItem("Kho");
-        mKho.DropDownItems.Add("Nhập kho", null, (_, _) => Mo(new frmNhapKho()));
-        mKho.DropDownItems.Add("Tồn kho", null, (_, _) => ChuaCo());
-
-        var mCap = new ToolStripMenuItem("Cấp phát & Tiêu hao");
-        mCap.DropDownItems.Add("Cấp phát và theo dõi tiêu hao", null, (_, _) => Mo(new frmCapPhat()));
-
-        var mBC = new ToolStripMenuItem("Báo cáo");
-        mBC.DropDownItems.Add("Thống kê – báo cáo", null, (_, _) => ChuaCo());
-        */
-
-        var mDanhMuc = new ToolStripMenuItem("Danh mục");
-        mDanhMuc.DropDownItems.Add("Vật tư", null, (_, _) => Mo(new frmVatTu()));
-        mDanhMuc.DropDownItems.Add("Nhà cung cấp", null, (_, _) => Mo(DanhMucForms.NhaCungCap()));
-        mDanhMuc.DropDownItems.Add("Bộ phận / Nhân viên / Kho", null, (_, _) => Mo(new frmDanhMuc()));
-
-        var mMua = new ToolStripMenuItem("Mua hàng");
-        mMua.DropDownItems.Add("Kế hoạch mua", null, (_, _) => Mo(new frmKeHoachMua()));
-        mMua.DropDownItems.Add("Đơn đặt hàng", null, (_, _) => Mo(new frmDonDatHang()));
-        mMua.DropDownItems.Add("Kiểm tra chất lượng", null, (_, _) => Mo(DanhMucForms.KiemTraCL()));
-
-        var mKho = new ToolStripMenuItem("Kho");
-        mKho.DropDownItems.Add("Nhập kho", null, (_, _) => Mo(new frmNhapKho()));
-        mKho.DropDownItems.Add("Tồn kho", null, (_, _) => Mo(new frmTonKho()));
-
-        var mCap = new ToolStripMenuItem("Cấp phát & Tiêu hao");
-        mCap.DropDownItems.Add("Lệnh sản xuất", null, (_, _) => Mo(DanhMucForms.LenhSanXuat()));
-        mCap.DropDownItems.Add("Cấp phát và theo dõi tiêu hao", null, (_, _) => Mo(new frmCapPhat()));
-
-        var mBC = new ToolStripMenuItem("Báo cáo");
-        mBC.DropDownItems.Add("Thống kê – báo cáo", null, (_, _) => Mo(new frmBaoCao()));
-
-        menu.Items.AddRange(new ToolStripItem[] { mHeThong, mDanhMuc, mMua, mKho, mCap, mBC });
+        menu.Items.Add(mHeThong);
+        menu.Items.Add(Nhom("Danh mục",
+            new MucMenu("Vật tư", Chuc.VatTu, () => new frmVatTu()),
+            new MucMenu("Nhà cung cấp", Chuc.NhaCungCap, DanhMucForms.NhaCungCap),
+            new MucMenu("Bộ phận / Nhân viên / Kho", Chuc.DanhMucKhac, () => new frmDanhMuc())));
+        menu.Items.Add(Nhom("Mua hàng",
+            new MucMenu("Kế hoạch mua", Chuc.KeHoachMua, () => new frmKeHoachMua()),
+            new MucMenu("Đơn đặt hàng", Chuc.DonDatHang, () => new frmDonDatHang()),
+            new MucMenu("Kiểm tra chất lượng", Chuc.KiemTraCL, DanhMucForms.KiemTraCL)));
+        menu.Items.Add(Nhom("Kho",
+            new MucMenu("Nhập kho", Chuc.NhapKho, () => new frmNhapKho()),
+            new MucMenu("Tồn kho", Chuc.TonKho, () => new frmTonKho())));
+        menu.Items.Add(Nhom("Cấp phát & Tiêu hao",
+            new MucMenu("Lệnh sản xuất", Chuc.LenhSanXuat, DanhMucForms.LenhSanXuat),
+            new MucMenu("Cấp phát và theo dõi tiêu hao", Chuc.CapPhat, () => new frmCapPhat())));
+        menu.Items.Add(Nhom("Báo cáo",
+            new MucMenu("Thống kê – báo cáo", Chuc.BaoCao, () => new frmBaoCao())));
         MainMenuStrip = menu;
         Controls.Add(menu);
 
         // ----- Banner -----
         new Label
         {
-            Text = "HỆ THỐNG QUẢN LÝ TIÊU HAO VẬT TƯ SẢN XUẤT",
+            Text = "QUẢN LÝ TIÊU HAO VẬT TƯ SẢN XUẤT",
             BackColor = Color.CornflowerBlue,
             ForeColor = Color.White,
             Font = new Font("Segoe UI", 16, FontStyle.Bold),
@@ -92,42 +83,73 @@ public partial class frmMain : Form
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         }.At(this, 0, 28, ClientSize.Width, 50);
 
-        // ----- 4 ô thống kê -----
-        Card("VẬT TƯ DƯỚI MỨC TỐI THIỂU", lblVatTuThieu, 20, Color.MistyRose);
-        Card("ĐĐH CHỜ DUYỆT", lblDDHChoDuyet, 290, Color.LightYellow);
-        Card("LỆNH SX ĐANG SẢN XUẤT", lblLSXDangSX, 560, Color.Honeydew);
-        Card("TỔNG GIÁ TRỊ TỒN KHO", lblTongGiaTriTon, 830, Color.AliceBlue);
-
-        // ----- 2 DataGridView -----
-        new Label { Text = "CẢNH BÁO TỒN KHO", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true }
-            .At(this, 20, 200);
-        dgvCanhBaoTon = UI.Grid(this, 20, 225, 520, 270);
-        dgvCanhBaoTon.DataBindingComplete += (_, _) =>
+        if (_xemSoLieu)
         {
-            foreach (DataGridViewRow r in dgvCanhBaoTon.Rows)
-                r.DefaultCellStyle.BackColor =
-                    Convert.ToString(r.Cells["TinhTrangTon"].Value) == "Dưới mức tối thiểu"
-                        ? Color.MistyRose : Color.LightYellow;
-        };
+            Card("VẬT TƯ DƯỚI MỨC TỐI THIỂU", lblVatTuThieu, 20, Color.MistyRose);
+            Card("ĐĐH CHỜ DUYỆT", lblDDHChoDuyet, 290, Color.LightYellow);
+            Card("LỆNH SX ĐANG SẢN XUẤT", lblLSXDangSX, 560, Color.Honeydew);
+            Card("TỔNG GIÁ TRỊ TỒN KHO", lblTongGiaTriTon, 830, Color.AliceBlue);
 
-        new Label { Text = "VẬT TƯ VƯỢT ĐỊNH MỨC", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true }
-            .At(this, 560, 200);
-        dgvVuotDinhMuc = UI.Grid(this, 560, 225, 520, 270);
+            new Label { Text = "CẢNH BÁO TỒN KHO", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true }
+                .At(this, 20, 200);
+            dgvCanhBaoTon = UI.Grid(this, 20, 225, 520, 270);
+            dgvCanhBaoTon.DataBindingComplete += (_, _) =>
+            {
+                foreach (DataGridViewRow r in dgvCanhBaoTon.Rows)
+                    r.DefaultCellStyle.BackColor =
+                        Convert.ToString(r.Cells["TinhTrangTon"].Value) == "Dưới mức tối thiểu"
+                            ? Color.MistyRose : Color.LightYellow;
+            };
 
-        // ----- Truy cập nhanh -----
-        new Label { Text = "TRUY CẬP NGHIỆP VỤ NHANH", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true }
+            new Label { Text = "VẬT TƯ VƯỢT ĐỊNH MỨC", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true }
+                .At(this, 560, 200);
+            dgvVuotDinhMuc = UI.Grid(this, 560, 225, 520, 270);
+        }
+        else
+        {
+            new Label
+            {
+                Text = $"Xin chào, {Session.HoTen}!\nVai trò: {Session.TenVaiTro}\n\n" +
+                       "Hãy chọn chức năng ở menu phía trên hoặc ở các nút bên dưới.",
+                Font = new Font("Segoe UI", 14),
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleCenter
+            }.At(this, 20, 110, 1060, 330);
+        }
+
+        
+        // ----- Nút truy cập nhanh (chỉ hiện nút được phép) -----
+        /*new Label { Text = "TRUY CẬP NGHIỆP VỤ NHANH", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true }
             .At(this, 20, 505);
-        UI.Btn(this, "QUẢN LÝ VẬT TƯ", 20, 535, 200, () => Mo(new frmVatTu()), 45);
-        UI.Btn(this, "NHẬP KHO", 240, 535, 150, () => Mo(new frmNhapKho()), 45);
-        UI.Btn(this, "CẤP PHÁT & THEO DÕI TIÊU HAO", 410, 535, 280, () => Mo(new frmCapPhat()), 45);
-        UI.Btn(this, "LÀM MỚI SỐ LIỆU", 710, 535, 150, LoadDashboard, 45);
-        UI.Btn(this, "THOÁT CHƯƠNG TRÌNH", 880, 535, 190, () =>
+        var nhanh = new[]
+        {
+            new MucMenu("VẬT TƯ", Chuc.VatTu, () => new frmVatTu()),
+            new MucMenu("ĐƠN ĐẶT HÀNG", Chuc.DonDatHang, () => new frmDonDatHang()),
+            new MucMenu("KIỂM TRA CL", Chuc.KiemTraCL, DanhMucForms.KiemTraCL),
+            new MucMenu("NHẬP KHO", Chuc.NhapKho, () => new frmNhapKho()),
+            new MucMenu("CẤP PHÁT", Chuc.CapPhat, () => new frmCapPhat()),
+            new MucMenu("LỆNH SX", Chuc.LenhSanXuat, DanhMucForms.LenhSanXuat),
+            new MucMenu("TỒN KHO", Chuc.TonKho, () => new frmTonKho()),
+            new MucMenu("BÁO CÁO", Chuc.BaoCao, () => new frmBaoCao()),
+        };
+        int x = 20;
+        foreach (var m in nhanh.Where(m => Session.Co(m.Quyen)))
+        {
+            var tao = m.Tao;
+            UI.Btn(this, m.Text, x, 535, 125, () => Mo(tao()), 45);
+            x += 133;
+        }*/
+
+        /*int x2 = 20;
+        if (_xemSoLieu) { UI.Btn(this, "LÀM MỚI SỐ LIỆU", x2, 590, 170, LoadDashboard, 40); x2 += 180; }
+        UI.Btn(this, "ĐĂNG XUẤT", x2, 590, 150, DangXuatNgay, 40); x2 += 160;
+        UI.Btn(this, "THOÁT CHƯƠNG TRÌNH", x2, 590, 200, () =>
         {
             if (UI.Confirm("Bạn có chắc muốn thoát chương trình?")) Close();
-        }, 45);
+        }, 40);*/
 
         var status = new StatusStrip();
-        status.Items.Add("Ngày: " + DateTime.Now.ToString("dd/MM/yyyy"));
+        status.Items.Add($"Người dùng: {Session.HoTen} ({Session.TenVaiTro})   |   Ngày: {DateTime.Now:dd/MM/yyyy}");
         Controls.Add(status);
     }
 
@@ -149,14 +171,19 @@ public partial class frmMain : Form
     private void Mo(Form f)
     {
         using (f) f.ShowDialog(this);
-        LoadDashboard();   // quay về thì cập nhật lại số liệu
+        LoadDashboard();
     }
 
-    private void ChuaCo() =>
-        UI.Info("Chức năng này nằm ngoài 3 giao diện được thiết kế trong báo cáo.");
+    private void DangXuatNgay()
+    {
+        if (!UI.Confirm("Đăng xuất khỏi phần mềm?")) return;
+        DangXuat = true;
+        Close();
+    }
 
     private void LoadDashboard()
     {
+        if (!_xemSoLieu || dgvCanhBaoTon == null || dgvVuotDinhMuc == null) return;
         try
         {
             using var db = new QuanLyTieuHaoVatTuContext();
@@ -189,8 +216,7 @@ public partial class frmMain : Form
             UI.Headers(dgvCanhBaoTon, ("TenKho", "Kho"), ("TenVatTu", "Vật tư"), ("SoLuongTon", "Tồn"),
                 ("MucTonMin", "Tối thiểu"), ("MucTonMax", "Tối đa"), ("TinhTrangTon", "Tình trạng"));
 
-            dgvVuotDinhMuc.DataSource = TieuHaoService.Tinh(db)
-                .Where(r => r.DanhGia == "Vượt định mức").ToList();
+            dgvVuotDinhMuc.DataSource = TieuHaoService.Tinh(db).Where(r => r.DanhGia == "Vượt định mức").ToList();
             UI.Headers(dgvVuotDinhMuc, ("MaLSX", "Mã LSX"), ("TenSanPham", "Sản phẩm"), ("TenVatTu", "Vật tư"),
                 ("DinhMucLyThuyet", "Định mức"), ("TongThucNhan", "Thực nhận"), ("TyLeVuot", "Vượt (%)"));
             foreach (var c in new[] { "TongCapPhat", "ChenhLechCapNhan", "ChenhLechDinhMuc", "DanhGia" })

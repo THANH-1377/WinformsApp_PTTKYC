@@ -14,6 +14,25 @@ static class Program
         CultureInfo.CurrentCulture = vi;
 
         ApplicationConfiguration.Initialize();
-        Application.Run(new frmMain());
+
+        try { TaiKhoanService.KhoiTao(); }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Không kết nối được cơ sở dữ liệu hoặc chưa có bảng TAI_KHOAN:\n" +
+                            (ex.InnerException?.Message ?? ex.Message),
+                            "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
+
+        while (true)
+        {
+            using (var login = new frmLogin())
+                if (login.ShowDialog() != DialogResult.OK) break;      // Thoát ở màn hình đăng nhập
+
+            var main = new frmMain();
+            Application.Run(main);
+            Session.Xoa();
+            if (!main.DangXuat) break;                                 // đóng cửa sổ chính = thoát hẳn
+        }
     }
 }

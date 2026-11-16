@@ -110,7 +110,8 @@ public class frmKeHoachMua : Form
         dgvChiTiet.ReadOnly = !_choSua;
         txtTen.Enabled = txtGhiChu.Enabled = dtpThangNam.Enabled = dtpNgayLap.Enabled = cboNhanVienLap.Enabled = _choSua;
         btnLuu.Enabled = _choSua;
-        btnDuyet.Enabled = btnXoa.Enabled = _ma != null && _choSua;
+        btnDuyet.Enabled = _ma != null && _choSua && Session.Co(Chuc.DuyetChungTu);
+        btnXoa.Enabled = _ma != null && _choSua;
     }
 
     private static string NextMa(QuanLyTieuHaoVatTuContext db)
@@ -130,6 +131,7 @@ public class frmKeHoachMua : Form
         dtpThangNam.Value = DateTime.Today; dtpNgayLap.Value = DateTime.Today;
         lblTrangThai.Text = "Dự thảo (mới)"; lblNgayDuyet.Text = "";
         numSoLuongCan.Value = 0;
+        if (Session.MaNhanVien != null) cboNhanVienLap.SelectedValue = Session.MaNhanVien;   // frmKeHoachMua, frmDonDatHang
         SetEditable();
     }
 
@@ -313,6 +315,7 @@ public class frmKeHoachMua : Form
 
     private void Duyet()
     {
+        if (!Session.Co(Chuc.DuyetChungTu)) { UI.Error("Chỉ Quản lý vật tư mới được duyệt kế hoạch mua."); return; }
         if (_ma == null || !_choSua) { UI.Error("Hãy chọn một kế hoạch đang ở trạng thái Dự thảo để duyệt."); return; }
         if (!UI.Confirm($"Duyệt kế hoạch {_ma}? Sau khi duyệt sẽ không sửa được nữa.")) return;
         var ma = _ma;
